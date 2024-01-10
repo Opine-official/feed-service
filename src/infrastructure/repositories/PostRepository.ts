@@ -1,0 +1,27 @@
+import { IPostRepository } from '../../domain/interfaces/IPostRepository';
+import { Post } from '../../domain/entities/Post';
+import PostModel from '../models/PostModel';
+
+export class PostRepository implements IPostRepository {
+  public async save(post: Post): Promise<Error | void> {
+    try {
+      const postDocument = new PostModel({
+        postId: post.postId,
+        title: post.title,
+        description: post.description,
+        user: post.user,
+        tags: post.tags,
+        slug: post.slug,
+      });
+
+      await postDocument.save();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return new Error(error.message);
+      }
+      return new Error('Something went wrong while posting');
+    }
+  }
+
+  // public async retrieve
+}
