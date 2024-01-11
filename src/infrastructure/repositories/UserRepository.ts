@@ -26,4 +26,22 @@ export class UserRepository implements IUserRepository {
     const userDocument = await UserModel.findOne({ userId });
     return userDocument ? userDocument._id.toString() : null;
   }
+
+  public async findTopUsers(): Promise<
+    { userId: string; name: string; username: string }[] | Error
+  > {
+    try {
+      const userDocuments = await UserModel.find();
+      return userDocuments.map((doc) => ({
+        userId: doc.userId,
+        name: doc.name,
+        username: doc.username,
+      }));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return new Error(error.message);
+      }
+      return new Error('Something went wrong');
+    }
+  }
 }

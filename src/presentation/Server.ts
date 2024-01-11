@@ -2,9 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import { VerifyUserController } from './controllers/VerifyUserController';
 import cookieParser from 'cookie-parser';
+import { GetFeedPostsController } from './controllers/GetFeedPostsController';
+import { GetTopUsersController } from './controllers/GetTopUsersController';
 
 interface ServerControllers {
   verifyUserController: VerifyUserController;
+  getFeedPostsController: GetFeedPostsController;
+  getTopUsersController: GetTopUsersController;
 }
 
 const corsOptions = {
@@ -25,10 +29,18 @@ export class Server {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    app.get('/', (req, res) => res.send('Feed service is running'));
+    app.get('/test', (req, res) => res.send('Feed service is running'));
+
+    app.get('/', (req, res) => {
+      controllers.getFeedPostsController.handle(req, res);
+    });
 
     app.get('/verifyUser', (req, res) => {
       controllers.verifyUserController.handle(req, res);
+    });
+
+    app.get('/topUsers', (req, res) => {
+      controllers.getTopUsersController.handle(req, res);
     });
 
     app.listen(port, () => {
