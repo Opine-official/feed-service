@@ -1,3 +1,4 @@
+import { DeletePost } from '../../application/use-cases/DeletePost';
 import SavePost from '../../application/use-cases/SavePost';
 import SaveUser from '../../application/use-cases/SaveUser';
 import kafka from '../../infrastructure/brokers/kafka/config';
@@ -10,10 +11,12 @@ const run = async () => {
   await consumer.connect();
   await consumer.subscribe({ topic: 'user-register-topic' });
   await consumer.subscribe({ topic: 'post-create-topic' });
+  await consumer.subscribe({ topic: 'post-delete-topic' });
   const userRepository = new UserRepository();
   const postRepository = new PostRepository();
   const saveUser = new SaveUser(userRepository);
   const savePost = new SavePost(postRepository, userRepository);
+  const deletePost = new DeletePost(postRepository);
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
@@ -44,6 +47,15 @@ const run = async () => {
 
         if (savePostResult instanceof Error) {
           console.error(savePostResult);
+          return;
+        }
+      } else if (topic === 'post-delete-topic') {
+        const slug = JSON.parse(message?.value?.toString());
+
+        const deletePostResult = await deletePost.execute({ slug: slug });
+
+        if (deletePostResult instanceof Error) {
+          console.error(deletePostResult);
           return;
         }
       }

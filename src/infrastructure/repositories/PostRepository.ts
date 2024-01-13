@@ -24,6 +24,19 @@ export class PostRepository implements IPostRepository {
     }
   }
 
+  public async delete(slug: string): Promise<void | Error> {
+    try {
+      await PostModel.deleteOne({
+        slug: slug,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return new Error(error.message);
+      }
+
+      return new Error('Something went wrong while deleting');
+    }
+  }
   public async getFeedPosts(userId: string): Promise<IFeedPost[] | Error> {
     try {
       console.log(userId); // To be used later to personalize fetching posts for each user
