@@ -13,6 +13,9 @@ const PostSchema = new Schema({
     type: String,
     required: true,
   },
+  isDraft: { type: Boolean, required: true },
+  isThreadsEnabled: { type: Boolean, required: true },
+  postedOn: { type: Date, required: true },
 });
 
 function arrayLimit(val: string[]): boolean {

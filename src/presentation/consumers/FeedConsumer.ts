@@ -1,5 +1,5 @@
 import { DeletePost } from '../../application/use-cases/DeletePost';
-import SavePost from '../../application/use-cases/SavePost';
+import { SavePost } from '../../application/use-cases/SavePost';
 import SaveUser from '../../application/use-cases/SaveUser';
 import kafka from '../../infrastructure/brokers/kafka/config';
 import { PostRepository } from '../../infrastructure/repositories/PostRepository';

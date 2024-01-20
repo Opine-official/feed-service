@@ -54,6 +54,7 @@ export class PostRepository implements IPostRepository {
         },
         tags: post.tags,
         slug: post.slug,
+        postedOn: post.postedOn,
       }));
     } catch (error: unknown) {
       if (error instanceof Error) {
