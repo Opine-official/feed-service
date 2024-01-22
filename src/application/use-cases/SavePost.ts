@@ -10,6 +10,8 @@ interface ISavePostDTO {
   user: string;
   tags: string[];
   slug: string;
+  isDraft: boolean;
+  isThreadsEnabled: boolean;
   createdAt: Date;
 }
 
@@ -37,6 +39,8 @@ export class SavePost implements IUseCase<ISavePostDTO, ISavePostResult> {
       user: mongoId,
       tags: input.tags,
       slug: input.slug,
+      isDraft: input.isDraft,
+      isThreadsEnabled: input.isThreadsEnabled,
       postedOn: input.createdAt,
     };
 

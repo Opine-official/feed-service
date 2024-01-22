@@ -13,6 +13,9 @@ export class PostRepository implements IPostRepository {
         user: post.user,
         tags: post.tags,
         slug: post.slug,
+        isDraft: post.isDraft,
+        isThreadsEnabled: post.isThreadsEnabled,
+        postedOn: post.postedOn,
       });
 
       await postDocument.save();
@@ -40,7 +43,9 @@ export class PostRepository implements IPostRepository {
   public async getFeedPosts(userId: string): Promise<IFeedPost[] | Error> {
     try {
       console.log(userId); // To be used later to personalize fetching posts for each user
-      const posts = await PostModel.find().populate('user');
+      const posts = await PostModel.find()
+        .sort({ postedOn: -1 })
+        .populate('user');
       return posts.map((post) => ({
         postId: post.postId,
         title: post.title,

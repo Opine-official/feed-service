@@ -5,6 +5,8 @@ type PostParams = {
   user: string;
   tags: string[];
   slug: string;
+  isDraft: boolean;
+  isThreadsEnabled: boolean;
   postedOn: Date;
 };
 
@@ -15,6 +17,8 @@ export class Post {
   user: string;
   tags: string[];
   slug: string;
+  isDraft: boolean;
+  isThreadsEnabled: boolean;
   postedOn: Date;
 
   constructor(params: PostParams) {
@@ -24,6 +28,8 @@ export class Post {
     this.user = params.user;
     this.tags = params.tags;
     this.slug = params.slug;
+    this.isDraft = params.isDraft;
+    this.isThreadsEnabled = params.isThreadsEnabled;
     this.postedOn = params.postedOn;
   }
 }
