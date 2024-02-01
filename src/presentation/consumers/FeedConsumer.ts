@@ -1,7 +1,9 @@
 import { DeletePost } from '../../application/use-cases/DeletePost';
+import { SaveChannelSubscribe } from '../../application/use-cases/SaveChannelSubscribe';
 import { SavePost } from '../../application/use-cases/SavePost';
 import SaveUser from '../../application/use-cases/SaveUser';
 import kafka from '../../infrastructure/brokers/kafka/config';
+import { ChannelSubscribeRepository } from '../../infrastructure/repositories/ChannelSubscribeRepository';
 import { PostRepository } from '../../infrastructure/repositories/PostRepository';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
 
@@ -14,9 +16,14 @@ const run = async () => {
   await consumer.subscribe({ topic: 'post-delete-topic' });
   const userRepository = new UserRepository();
   const postRepository = new PostRepository();
+  const channelSubscribeRepository = new ChannelSubscribeRepository();
+
   const saveUser = new SaveUser(userRepository);
   const savePost = new SavePost(postRepository, userRepository);
   const deletePost = new DeletePost(postRepository);
+  const saveChannelSubscribe = new SaveChannelSubscribe(
+    channelSubscribeRepository,
+  );
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
@@ -56,6 +63,16 @@ const run = async () => {
 
         if (deletePostResult instanceof Error) {
           console.error(deletePostResult);
+          return;
+        }
+      } else if (topic === 'channel-subscribe-topic') {
+        const channelData = JSON.parse(message?.value?.toString());
+
+        const saveChannelResult =
+          await saveChannelSubscribe.execute(channelData);
+
+        if (saveChannelResult instanceof Error) {
+          console.error(saveChannelResult);
           return;
         }
       }
