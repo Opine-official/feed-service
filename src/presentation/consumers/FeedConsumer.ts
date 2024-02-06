@@ -2,6 +2,7 @@ import { DeletePost } from '../../application/use-cases/DeletePost';
 import { SaveChannelSubscribe } from '../../application/use-cases/SaveChannelSubscribe';
 import { SavePost } from '../../application/use-cases/SavePost';
 import SaveUser from '../../application/use-cases/SaveUser';
+import { UpdateUser } from '../../application/use-cases/UpdateUser';
 import kafka from '../../infrastructure/brokers/kafka/config';
 import { ChannelSubscribeRepository } from '../../infrastructure/repositories/ChannelSubscribeRepository';
 import { PostRepository } from '../../infrastructure/repositories/PostRepository';
@@ -19,6 +20,7 @@ const run = async () => {
   const channelSubscribeRepository = new ChannelSubscribeRepository();
 
   const saveUser = new SaveUser(userRepository);
+  const updateUser = new UpdateUser(userRepository);
   const savePost = new SavePost(postRepository, userRepository);
   const deletePost = new DeletePost(postRepository);
   const saveChannelSubscribe = new SaveChannelSubscribe(
@@ -73,6 +75,15 @@ const run = async () => {
 
         if (saveChannelResult instanceof Error) {
           console.error(saveChannelResult);
+          return;
+        }
+      } else if (topic === 'user-update-topic') {
+        const userData = JSON.parse(message?.value?.toString());
+
+        const updateUserResult = await updateUser.execute(userData);
+
+        if (updateUserResult instanceof Error) {
+          console.error(updateUserResult);
           return;
         }
       }
