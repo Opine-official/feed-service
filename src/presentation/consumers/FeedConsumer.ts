@@ -16,6 +16,7 @@ const run = async () => {
   await consumer.subscribe({ topic: 'user-register-topic' });
   await consumer.subscribe({ topic: 'post-create-topic' });
   await consumer.subscribe({ topic: 'post-delete-topic' });
+  await consumer.subscribe({ topic: 'channel-subscribe-topic' });
   await producer.connect();
   const userRepository = new UserRepository();
   const postRepository = new PostRepository();

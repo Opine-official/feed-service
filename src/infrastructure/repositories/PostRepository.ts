@@ -40,10 +40,16 @@ export class PostRepository implements IPostRepository {
       return new Error('Something went wrong while deleting');
     }
   }
-  public async getFeedPosts(userId: string): Promise<IFeedPost[] | Error> {
+
+  public async getFeedPosts(
+    userId: string,
+    subscribedChannelNames: string[],
+  ): Promise<IFeedPost[] | Error> {
     try {
-      console.log(userId); // To be used later to personalize fetching posts for each user
-      const posts = await PostModel.find()
+      console.log(userId);
+      const posts = await PostModel.find({
+        tags: { $in: subscribedChannelNames },
+      })
         .sort({ postedOn: -1 })
         .populate('user');
       return posts.map((post) => ({

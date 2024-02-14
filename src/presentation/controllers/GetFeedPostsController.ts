@@ -8,12 +8,10 @@ export class GetFeedPostsController implements IController {
   public async handle(req: Request, res: Response): Promise<void> {
     const userId = req.query.userId?.toString();
 
-    // Commented out for now as personalization is not implemented yet
-
-    // if (typeof userId !== 'string') {
-    //   res.status(400).json({ error: 'Invalid userId' });
-    //   return;
-    // }
+    if (!userId || typeof userId !== 'string') {
+      res.status(400).json({ error: 'Invalid userId' });
+      return;
+    }
 
     const result = await this._useCase.execute({ userId: userId });
 
