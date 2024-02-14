@@ -17,6 +17,7 @@ const run = async () => {
   await consumer.subscribe({ topic: 'post-create-topic' });
   await consumer.subscribe({ topic: 'post-delete-topic' });
   await consumer.subscribe({ topic: 'channel-subscribe-topic' });
+  await consumer.subscribe({ topic: 'channel-subscribe-delete-topic' });
   await producer.connect();
   const userRepository = new UserRepository();
   const postRepository = new PostRepository();
@@ -115,6 +116,16 @@ const run = async () => {
 
         if (saveChannelResult instanceof Error) {
           console.error(saveChannelResult);
+          return;
+        }
+      } else if (topic === 'channel-subscribe-delete-topic') {
+        const channelSubscribeId = JSON.parse(message?.value?.toString());
+
+        const deleteChannelSubscribeResult =
+          await channelSubscribeRepository.delete(channelSubscribeId);
+
+        if (deleteChannelSubscribeResult instanceof Error) {
+          console.error(deleteChannelSubscribeResult);
           return;
         }
       } else if (topic === 'user-update-topic') {
