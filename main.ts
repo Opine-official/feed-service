@@ -2,6 +2,7 @@ import { GetFeedPosts } from './src/application/use-cases/GetFeedPosts';
 import GetTopUsers from './src/application/use-cases/GetTopUsers';
 import { VerifyUser } from './src/application/use-cases/VerifyUser';
 import { DatabaseConnection } from './src/infrastructure/database/Connection';
+import { ChannelSubscribeRepository } from './src/infrastructure/repositories/ChannelSubscribeRepository';
 import { PostRepository } from './src/infrastructure/repositories/PostRepository';
 import { UserRepository } from './src/infrastructure/repositories/UserRepository';
 import { Server } from './src/presentation/Server';
@@ -14,9 +15,10 @@ export async function main(): Promise<void> {
   await DatabaseConnection.connect();
   const postRepo = new PostRepository();
   const userRepo = new UserRepository();
+  const channelSubRepo = new ChannelSubscribeRepository();
 
   const verifyUser = new VerifyUser();
-  const getFeedPosts = new GetFeedPosts(postRepo);
+  const getFeedPosts = new GetFeedPosts(postRepo, channelSubRepo);
   const getTopUsers = new GetTopUsers(userRepo);
 
   const verifyUserController = new VerifyUserController(verifyUser);
