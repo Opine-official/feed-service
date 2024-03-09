@@ -3,6 +3,7 @@ import { SaveChannelSubscribe } from '../../application/use-cases/SaveChannelSub
 import { SavePost } from '../../application/use-cases/SavePost';
 import SaveUser from '../../application/use-cases/SaveUser';
 import { UpdateUser } from '../../application/use-cases/UpdateUser';
+import { UpdateTokenVersion } from '../../application/use-cases/UpdateTokenVersion';
 import kafka from '../../infrastructure/brokers/kafka/config';
 import { ChannelSubscribeRepository } from '../../infrastructure/repositories/ChannelSubscribeRepository';
 import { PostRepository } from '../../infrastructure/repositories/PostRepository';
@@ -18,6 +19,8 @@ const run = async () => {
   await consumer.subscribe({ topic: 'post-delete-topic' });
   await consumer.subscribe({ topic: 'channel-subscribe-topic' });
   await consumer.subscribe({ topic: 'channel-subscribe-delete-topic' });
+  await consumer.subscribe({ topic: 'user-update-topic' });
+  await consumer.subscribe({ topic: 'user-login-topic' });
   await producer.connect();
   const userRepository = new UserRepository();
   const postRepository = new PostRepository();
@@ -30,6 +33,7 @@ const run = async () => {
   const saveChannelSubscribe = new SaveChannelSubscribe(
     channelSubscribeRepository,
   );
+  const updateTokenVersion = new UpdateTokenVersion(userRepository);
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
@@ -135,6 +139,16 @@ const run = async () => {
 
         if (updateUserResult instanceof Error) {
           console.error(updateUserResult);
+          return;
+        }
+      } else if (topic === 'user-login-topic') {
+        const userData = JSON.parse(message?.value?.toString());
+
+        const updateTokenVersionResult =
+          await updateTokenVersion.execute(userData);
+
+        if (updateTokenVersionResult instanceof Error) {
+          console.error(updateTokenVersionResult);
           return;
         }
       }
