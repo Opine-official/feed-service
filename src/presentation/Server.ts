@@ -4,6 +4,8 @@ import { VerifyUserController } from './controllers/VerifyUserController';
 import cookieParser from 'cookie-parser';
 import { GetFeedPostsController } from './controllers/GetFeedPostsController';
 import { GetTopUsersController } from './controllers/GetTopUsersController';
+import { checkUserTokenVersion } from '../infrastructure/middlewares/checkTokenVersion';
+import { authenticateRole } from '@opine-official/authentication';
 
 interface ServerControllers {
   verifyUserController: VerifyUserController;
@@ -37,17 +39,27 @@ export class Server {
 
     app.get('/test', (req, res) => res.send('Feed service is running'));
 
-    app.get('/', (req, res) => {
-      controllers.getFeedPostsController.handle(req, res);
-    });
+    app.get(
+      '/',
+      authenticateRole('user'),
+      checkUserTokenVersion,
+      (req, res) => {
+        controllers.getFeedPostsController.handle(req, res);
+      },
+    );
 
     app.get('/verifyUser', (req, res) => {
       controllers.verifyUserController.handle(req, res);
     });
 
-    app.get('/topUsers', (req, res) => {
-      controllers.getTopUsersController.handle(req, res);
-    });
+    app.get(
+      '/topUsers',
+      authenticateRole('user'),
+      checkUserTokenVersion,
+      (req, res) => {
+        controllers.getTopUsersController.handle(req, res);
+      },
+    );
 
     app.listen(port, () => {
       console.log(`Server is running in ${port}`);

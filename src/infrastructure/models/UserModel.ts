@@ -23,6 +23,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  tokenVersion: {
+    type: Number,
+    required: true,
+  },
 });
 
 export const UserModel = mongoose.model('User', UserSchema);
+// testing comment

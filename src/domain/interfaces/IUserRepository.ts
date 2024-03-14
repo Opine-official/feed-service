@@ -7,4 +7,9 @@ export interface IUserRepository {
   findTopUsers(): Promise<
     { userId: string; name: string; username: string }[] | Error
   >;
+  compareTokenVersion(userId: string, tokenVersion: number): Promise<boolean>;
+  updateTokenVersion(
+    userId: string,
+    tokenVersion: number,
+  ): Promise<number | Error>;
 }
